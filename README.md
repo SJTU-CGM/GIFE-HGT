@@ -150,7 +150,7 @@ Options (defaults in parentheses):
 
     --suffix		<string>	The suffix of genome file in database. (fna)
 
-    --distant		<string>        The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant		<string>        The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
     --identity		<float>		The threshold of identity. Two sequences above this threshold are considered to be similar. (0.5)
 ```
@@ -196,7 +196,7 @@ Options (defaults in parentheses):
 
     --mode		<string>	Filter mode. Original or Strict can be chosen. (Original)
 
-    --distant		<string>        The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant		<string>        The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
     --self		<string>	The self group. phylum, classs, order or species can be chosen. (all of them)
 
@@ -261,7 +261,7 @@ Options (defaults in parentheses):
 
     --depth			<int>		The lowest depth at which the HGTs is covered by WGS datasets. (10)
 
-    --distant			<string>	The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant			<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
     --self			<string>        The self group. phylum, classs, order or species can be chosen. (all of them)
 
@@ -310,7 +310,7 @@ Options (defaults in parentheses):
     
     --mode              	<string>        Filter mode. Original or Strict can be chosen. (Original)
 
-    --distant                  	<string>	The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant                  	<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
 ```
 Example command:
 ```
