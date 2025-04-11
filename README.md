@@ -1,5 +1,5 @@
-# FIFE-HGT: a Fast Identifier For Eukaryote Horizontal Gene Transfers
-FIFE-HGT is a fast identification method for HGTs in eukaryotes by combining sequence composition filtering and sequence alignment to reduce both the false-positive rate and computational cost. Moreover, it could identify some novel HGTs because it broke the restriction of identifying HGTs involving protein coding regions only.
+# GIFE-HGT: a Genome-wide Identifier For Eukaryote Horizontal Gene Transfers
+GIFE-HGT is a genome-wide identification method for HGTs in eukaryotes by combining sequence composition filtering and sequence alignment to reduce both the false-positive rate and computational cost. Moreover, it could identify some novel HGTs because it broke the restriction of identifying HGTs involving protein coding regions only.
 
 ## Installation
 ### Requirements
@@ -7,23 +7,23 @@ FIFE-HGT is a fast identification method for HGTs in eukaryotes by combining seq
 - Perl 5.26.3 or up
 - Python 3.11
 - Software needed: [lastz][1], [TRF][2], [cd-hit][3], [Bowtie2][4], [BLAST][5],[samtools][6], [MAFFT][7], [trimAl][8], [IQ-TREE][9].
-  You can also refer to this file (http://cgm.sjtu.edu.cn/hgt/FIFE/install.sh) to install the above software.
+  You can also refer to this file (http://cgm.sjtu.edu.cn/hgt/GIFE/install.sh) to install the above software.
 
 ### Installation procedures
-#### 1. Download the FIFE-HGT from github
+#### 1. Download the GIFE-HGT from github
 ```
-$ git clone https://github.com/SJTU-CGM/FIFE-HGT.git
+$ git clone https://github.com/SJTU-CGM/GIFE-HGT.git
 ```
 #### 2. Add bin/ to PATH and add lib/ to LD_LIBRARY_PATH
 ```
-$ export PATH=$PATH:/path/to/FIFE-HGT/bin/:
-$ export PERL5LIB=$PERL5LIB:/path/to/FIFE-HGT/lib/:
-$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/FIFE-HGT/lib/:
+$ export PATH=$PATH:/path/to/GIFE-HGT/bin/:
+$ export PERL5LIB=$PERL5LIB:/path/to/GIFE-HGT/lib/:
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/GIFE-HGT/lib/:
 ```
-#### 3. Test if FIFEHGT is installed successfully: using `FIFEHGT`. 
-If you see the following content, congratulations! FIFE-HGT is successfully installed. If not, see if all the requirements are satisfied.
+#### 3. Test if GIFEHGT is installed successfully: using `GIFEHGT`. 
+If you see the following content, congratulations! GIFE-HGT is successfully installed. If not, see if all the requirements are satisfied.
 ```
-Usage: FIFEHGT <command> ...
+Usage: GIFEHGT <command> ...
 
 Available commands:
 	kmerFilter	Select most different fragments with target genome by calculating the distance of kmer frequecies
@@ -38,9 +38,9 @@ The usage information for each command can be shown with the --help or -h option
 ## Quick start
 ### Example data
 We use the identification of HGTs in one chromosome of yeast with some bacteria as the example data.   
-Please download from here (http://cgm.sjtu.edu.cn/hgt/FIFE/example.tar.gz) and decompress it:
+Please download from here (http://cgm.sjtu.edu.cn/hgt/GIFE/example.tar.gz) and decompress it:
 ```
-$ wget http://cgm.sjtu.edu.cn/hgt/FIFE/example.tar.gz
+$ wget http://cgm.sjtu.edu.cn/hgt/GIFE/example.tar.gz
 $ tar zxvf example.tar.gz & cd example
 ```
 The dataset includes 
@@ -55,7 +55,7 @@ The dataset includes
 #### 1. `kmerFilter`: Select most different fragments with target genome by calculating the distance of kmer frequecies
 The script will split the target genome into fragments and select most different fragments with target genome by calculating the distance of kmer frequecies. Besides, the fragments overlapping with simple repeat sequences are removed using trf.
 ```
-Usage: FIFEHGT kmerFilter [options] --fasta <genome_file>
+Usage: GIFEHGT kmerFilter [options] --fasta <genome_file>
 
 Necessary input description:
 
@@ -85,14 +85,14 @@ Options (defaults in parentheses):
 ```
 Example command:
 ```
-$ FIFEHGT kmerFilter --fasta path/to/example/data/fa/sacCer3_NC_001144.5.fa
+$ GIFEHGT kmerFilter --fasta path/to/example/data/fa/sacCer3_NC_001144.5.fa
 ```
 Results can be found in the directory `path/to/example/kmerFilter`.  
 - `path/to/example/kmerFilter/4merFilter_removeSimRep.fa`: the fragments which are most different with target genome.
 #### 2. `splitDB`: Split the genomic database into three groups: SG, CRG and DRG
 The script will split the genomic database into three groups: SG, CRG and DRG and update taxonomic information of all organisms in genomic datasets.
 ```
-Usage: FIFEHGT splitDB --id <genome_id> --taxo <genome_taxonomy> --taxoes <taxonomy_file> --type <type_file>
+Usage: GIFEHGT splitDB --id <genome_id> --taxo <genome_taxonomy> --taxoes <taxonomy_file> --type <type_file>
 
 Necessary input description:
 
@@ -100,7 +100,7 @@ Necessary input description:
 
   genome_taxonomy	<string>	The taxonomy of target genome (a comma-separated string), whose format is like [kingdom,phylum,class,order].
 
-  taxonomy_file         <string>        The taxonomy of all genomes. each line of which is like [genome_id	genome_kingdom 	genoe_phylum	genome_class	genome_order].
+  taxonomy_file         <string>        The taxonomy of all genomes. each line of which is like [genome_id	genome_kingdom 	genome_phylum	genome_class	genome_order].
 
   type_file		<string>	The kingdom of all genomes. Like [GCF_000001405.40_GRCh38.p14_genomic      Metazoa] for human.
 
@@ -114,17 +114,17 @@ Options (defaults in parentheses):
 
   Other parameters:
 
-    --distant		<string>	The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant		<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
 ```
 Example command:
 ```
-$ FIFEHGT splitDB --id GCF_000146045.2 --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales --taxoes path/to/example/data/db/all_range.txt --type path/to/example/data/db/all_type.txt
+$ GIFEHGT splitDB --id GCF_000146045.2 --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales --taxoes path/to/example/data/db/all_range.txt --type path/to/example/data/db/all_type.txt
 ```
 Results can be found in the directory `path/to/example/splitDB`.  
 #### 3. `seqAlign`: Sequence aligment using LASTZ
 The script will acquire sequences of target genome which can align with genomes in DRG.
 ```
-Usage: FIFEHGT seqAlign [options] --db <db_genome_dir>
+Usage: GIFEHGT seqAlign [options] --db <db_genome_dir>
 
 Necessary input description:
 
@@ -156,13 +156,13 @@ Options (defaults in parentheses):
 ```
 Example command:
 ```
-$ FIFEHGT seqAlign --db path/to/example/data/db/refseq
+$ GIFEHGT seqAlign --db path/to/example/data/db/refseq
 ```
 Results can be found in the directory `path/to/example/seqAlign`.  
 #### 4.  `screenHGT`: Screen potential HGTs using sequence alignment results
 The script will acquire sequences of target genome which have higher identity with genomes in DRG than that in CRG. If Strict mode is chosen, it will require the similarity between sequences of target genome and genomes in CRG or DRG is high than one threshold. Besides, the sequences with too high or too low GC percentage, overlapped simple repeat, low complex repeat, single-copy-gene common to eukaryotes, ERV and mitochondrial and chloroplast (if have) sequences are removed. 
 ```
-Usage: FIFEHGT screenHGT [options] --repeat <repeat_file> --singlecopy <singlecopy_file> --mitChl <mitChl_file> --taxo <genome_taxonomy>
+Usage: GIFEHGT screenHGT [options] --repeat <repeat_file> --singlecopy <singlecopy_file> --mitChl <mitChl_file> --taxo <genome_taxonomy>
 
 Necessary input description:
 
@@ -212,14 +212,14 @@ Options (defaults in parentheses):
 ```
 Example command (strict mode is used):
 ```
-$ FIFEHGT screenHGT --mode Strict --repeat path/to/example/data/rmsk/rmsk.txt --singlecopy path/to/example/data/singlecopy/eukaryota.faa --mitChl path/to/example/data/mitochondria_chloroplast/mitochondria.fa --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales
+$ GIFEHGT screenHGT --mode Strict --repeat path/to/example/data/rmsk/rmsk.txt --singlecopy path/to/example/data/singlecopy/eukaryota.faa --mitChl path/to/example/data/mitochondria_chloroplast/mitochondria.fa --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales
 ```
 Results can be found in the directory `path/to/example/screenHGT`. 
 - `path/to/example/screenHGT/modeStrict/HGT.fa`: the sequences of potential HGTs.
 #### 5.  `WGSValidate`: Validate potential HGTs using WGS datasets
 The script will validate potential HGTs using WGS datasets.
 ```
-Usage: FIFEHGT WGSValidate [options] --dbdir <db_genome_dir> --dbInfo <db_info_file> --taxo <genome_taxonomy> --dbWGSDir <db_WGSdata_dir>
+Usage: GIFEHGT WGSValidate [options] --dbdir <db_genome_dir> --dbInfo <db_info_file> --taxo <genome_taxonomy> --dbWGSDir <db_WGSdata_dir>
 
 Necessary input description:
 
@@ -269,14 +269,14 @@ Options (defaults in parentheses):
 ```
 Example command (strict mode is used):
 ```
-$ FIFEHGT WGSValidate --dbdir path/to/example/data/db/refseq/ --mode Strict --dbInfo path/to/example/data/db/all_info.txt --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales --dbWGSDir path/to/example/data/db/WGSdata/
+$ GIFEHGT WGSValidate --dbdir path/to/example/data/db/refseq/ --mode Strict --dbInfo path/to/example/data/db/all_info.txt --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales --dbWGSDir path/to/example/data/db/WGSdata/
 ```
 Results can be found in the directory `path/to/example/WGSValidate`. 
 - `path/to/example/WGSValidate/afterWGS/HGT.fa`: the sequences of final HGTs.
 #### 6. `conPhyTree`: Construct sequence phylogenetic tree to validate HGTs
 The script will construct sequence phylogenetic tree to validate HGTs.
 ```
-Usage: FIFEHGT conPhyTree --genomeId <genome_id> --fullName <target_fullname> --dbId <db_id_file> --dbInfo <db_info_file>
+Usage: GIFEHGT conPhyTree --genomeId <genome_id> --fullName <target_fullname> --dbId <db_id_file> --dbInfo <db_info_file>
 
 Necessary input description:
 
@@ -314,7 +314,7 @@ Options (defaults in parentheses):
 ```
 Example command:
 ```
-$ FIFEHGT conPhyTree --mode Strict --genomeId GCF_000146045.2 --fullName Saccharomyces_cerevisiae_S288C --dbId path/to/example/data/db/all_id.txt --dbInfo path/to/example/data/db/all_info.txt
+$ GIFEHGT conPhyTree --mode Strict --genomeId GCF_000146045.2 --fullName Saccharomyces_cerevisiae_S288C --dbId path/to/example/data/db/all_id.txt --dbInfo path/to/example/data/db/all_info.txt
 ```
 Results can be found in the directory `path/to/example/conPhyTree`. 
 
