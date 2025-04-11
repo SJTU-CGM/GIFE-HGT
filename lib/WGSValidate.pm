@@ -8,7 +8,7 @@ use lib '.';
 use screenHGT;
 use Getopt::Long;
 
-my $usage="\nUsage: FIFEHGT WGSValidate [options] --dbdir <db_genome_dir> --dbInfo <db_info_file> --taxo <genome_taxonomy> --dbWGSDir <db_WGSdata_dir>
+my $usage="\nUsage: GIFEHGT WGSValidate [options] --dbdir <db_genome_dir> --dbInfo <db_info_file> --taxo <genome_taxonomy> --dbWGSDir <db_WGSdata_dir>
 
 WGSValidate program is used to validate potential HGTs using WGS datasets.
 
@@ -52,7 +52,7 @@ Options (defaults in parentheses):
 
     --depth			<int>		The lowest depth at which the HGTs is covered by WGS datasets. (10)
 
-    --distant			<string>	The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant			<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
     --self			<string>        The self group. phylum, classs, order or species can be chosen. (all of them)
 

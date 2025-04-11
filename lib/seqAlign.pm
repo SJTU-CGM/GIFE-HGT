@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my $usage="\nUsage: FIFEHGT seqAlign [options] --db <db_genome_dir>
+my $usage="\nUsage: GIFEHGT seqAlign [options] --db <db_genome_dir>
 
 SeqAlignprogram is used to sequence alignment using LASTZ.
 
@@ -34,7 +34,7 @@ Options (defaults in parentheses):
 
     --suffix		<string>	The suffix of genome file in database. (fna)
 
-    --distant		<string>        The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant		<string>        The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
     --identity		<float>		The threshold of identity. Two sequences above this threshold are considered to be similar. (0.5)
 

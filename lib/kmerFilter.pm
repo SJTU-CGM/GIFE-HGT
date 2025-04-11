@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my $usage="\nUsage: FIFEHGT kmerFilter [options] --fasta <genome_file>
+my $usage="\nUsage: GIFEHGT kmerFilter [options] --fasta <genome_file>
 
 kmerFilter program is used to select most different fragments with target genome by calculate the distance of kmer frequecies.
 

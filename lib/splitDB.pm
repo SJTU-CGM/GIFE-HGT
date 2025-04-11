@@ -7,7 +7,7 @@ use warnings;
 use base;
 use Getopt::Long;
 
-my $usage="\nUsage: FIFEHGT splitDB --id <genome_id> --taxo <genome_taxonomy> --taxoes <taxonomy_file> --type <type_file>
+my $usage="\nUsage: GIFEHGT splitDB --id <genome_id> --taxo <genome_taxonomy> --taxoes <taxonomy_file> --type <type_file>
 
 splitDB program is used to split the genomic database into three groups: SG, CRG and DRG.
 
@@ -31,7 +31,7 @@ Options (defaults in parentheses):
 
   Other parameters:
 
-    --distant		<string>	The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant		<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
 ";
 
@@ -213,7 +213,7 @@ if($distant eq "kingdom"){
     system($comcp);
     base::notin($orderid,$classid,$classOrderid);
 }else{
-    print "Wrong parameter for --distant. Only kingdom, phylum and class can be chosen.";
+    print "Wrong parameter for --distant. Only kingdom and phylum can be chosen.";
 }
 }
 

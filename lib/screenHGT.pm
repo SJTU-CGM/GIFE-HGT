@@ -8,7 +8,7 @@ use lib '.';
 use base;
 use Getopt::Long;
 
-my $usage="\nUsage: FIFEHGT screenHGT [options] --repeat <repeat_file> --singlecopy <singlecopy_file> --mitChl <mitChl_file> --taxo <genome_taxonomy>
+my $usage="\nUsage: GIFEHGT screenHGT [options] --repeat <repeat_file> --singlecopy <singlecopy_file> --mitChl <mitChl_file> --taxo <genome_taxonomy>
 
 screenHGT program is used to screen potential HGTs from sequence alignment results.
 
@@ -44,9 +44,9 @@ Options (defaults in parentheses):
 
     --mode		<string>	Filter mode. Original or Strict can be chosen. (Original)
 
-    --distant		<string>        The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant		<string>        The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
-    --self		<string>	The self group. phylum, classs, order or species can be chosen. (all of them)
+    --self		<string>	The self group. phylum, class, order or species can be chosen. (all of them)
 
     --length		<int>		The minimum length of HGTs. (150)
 

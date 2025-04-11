@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my $usage="\nUsage: FIFEHGT conPhyTree --genomeId <genome_id> --fullName <target_fullname> --dbId <db_id_file> --dbInfo <db_info_file>
+my $usage="\nUsage: GIFEHGT conPhyTree --genomeId <genome_id> --fullName <target_fullname> --dbId <db_id_file> --dbInfo <db_info_file>
 
 conPhyTree program is used to construct sequence phylogenetic tree to validate HGTs.
 
@@ -42,7 +42,7 @@ Options (defaults in parentheses):
     
     --mode              	<string>        Filter mode. Original or Strict can be chosen. (Original)
 
-    --distant                  	<string>	The distantly related group. kingdom, phylum or class can be chosen. (kingdom)
+    --distant                  	<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
 ";
 
