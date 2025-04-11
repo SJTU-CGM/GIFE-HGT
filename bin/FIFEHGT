@@ -46,7 +46,7 @@ if($commands{"kmerFilter"}){
 }
 
 sub PrintUsage{
-    print STDERR "\nUsage: FIFEHGT <command> ...\n\n";
+    print STDERR "\nUsage: GIFEHGT <command> ...\n\n";
     print STDERR "Available commands:\n";
     print STDERR "\tkmerFilter\tSelect most different fragments with target genome by calculating the distance of kmer frequecies\n";
     print STDERR "\tsplitDB\t\tSplit the genomic database into three groups: SG, CRG and DRG\n";
