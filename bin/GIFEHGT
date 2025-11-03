@@ -1,0 +1,57 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use kmerFilter;
+use splitDB;
+use seqAlign;
+use screenHGT;
+use WGSValidate;
+use conPhyTree;
+
+if(@ARGV<1){
+    PrintUsage();
+}
+else{
+my %commands=(
+    "kmerFilter"	=> 0,
+    "splitDB"		=> 0,
+    "seqAlign"          => 0,
+    "screenHGT"         => 0,
+    "WGSValidate"	=> 0,
+    "conPhyTree"	=> 0
+);
+
+my $com=shift @ARGV;
+if(defined $commands{$com}){
+    $commands{$com}=1;
+}
+else{
+    print STDERR "Invalid command: $com\n";
+    PrintUsage();
+}
+
+if($commands{"kmerFilter"}){
+    kmerFilter::kmerFilter(@ARGV);
+}elsif($commands{"splitDB"}){
+    splitDB::splitDB(@ARGV);
+}elsif($commands{"seqAlign"}){
+    seqAlign::seqAlign(@ARGV);
+}elsif($commands{"screenHGT"}){
+    screenHGT::screenHGT(@ARGV);
+}elsif($commands{"WGSValidate"}){
+    WGSValidate::WGSValidate(@ARGV);
+}elsif($commands{"conPhyTree"}){
+    conPhyTree::conPhyTree(@ARGV);
+}
+}
+
+sub PrintUsage{
+    print STDERR "\nUsage: GIFEHGT <command> ...\n\n";
+    print STDERR "Available commands:\n";
+    print STDERR "\tkmerFilter\tSelect most different fragments with target genome by calculating the distance of kmer frequecies\n";
+    print STDERR "\tsplitDB\t\tSplit the genomic database into three groups: SG, CRG and DRG\n";
+    print STDERR "\tseqAlign\tSequence aligment using LASTZ\n";
+    print STDERR "\tscreenHGT\tScreen potential HGTs using sequence alignment results\n";
+    print STDERR "\tWGSValidate\tValidate potential HGTs using WGS datasets\n";
+    print STDERR "\tconPhyTree\tConstruct sequence phylogenetic tree to validate HGTs\n";
+}
