@@ -1,6 +1,8 @@
 # GIFE-HGT: a Genome-wide Identifier For Eukaryote Horizontal Gene Transfers
 GIFE-HGT is a systematic and efficient method for genome-wide identification of horizontal gene transfers (HGTs) in eukaryotic genomes. GIFE-HGT incorporates an accelerated mode specifically designed for analyzing large genomes, which maintains high accuracy while significantly reducing computational requirements. Unlike conventional approaches that are limited to protein-coding regions, our method enables the discovery of novel HGTs in non-coding and regulatory regions. By implementing a strategic taxonomic classification system consisting of self-group (SG), closely related group (CRG), and distantly related group (DRG), GIFE-HGT effectively differentiates between ancient and recent HGT events.
 
+You can also find the introduction on the website (https://cgm.sjtu.edu.cn/GIFE-HGT) .
+
 ## Installation
 ### Requirements
 
