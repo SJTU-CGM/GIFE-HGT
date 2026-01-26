@@ -71,7 +71,7 @@ my $screen_length = 135;
 my $screen_coverage = 0.6;
 my $cdhit_threshold = 0.8;
 my $sim_close = 0.5;
-my $sim_distant = 0.6;
+my $sim_distant = 0.5;
 my $mode = "Original";
 my $db_dir = "./splitDB/";
 my $repeat_file;
