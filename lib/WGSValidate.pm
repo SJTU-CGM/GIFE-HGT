@@ -134,6 +134,9 @@ unless($HGT_homologous_info_dir=~/\/$/){
 unless($db_dir=~/\/$/){
     $db_dir.="/";
 }
+unless($db_WGSdata_dir=~/\/$/){
+    $db_WGSdata_dir.="/";
+}
 mkdir($out_dir);
 my $out_dir_table = $out_dir."table/";
 my $out_dir_faori = $out_dir."fa_ori/";
