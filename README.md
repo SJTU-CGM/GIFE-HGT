@@ -46,7 +46,7 @@ $ wget http://cgm.sjtu.edu.cn/GIFE-HGT/data/example.tar.gz
 $ tar zxvf example.tar.gz & cd example
 ```
 The dataset includes 
--  `data/fa/sacCer3_NC_001144.5.fa`: sequence of one chromosome of yeast
+-  `data/fa/sacCer3_NC_001146.8.fa`: sequence of one chromosome of yeast
 -  `data/db/refseq/*`: genomic databases including 10 fungi and 13 bacteria
 -  `data/db/*txt`: taxonomic information of all organisms in genomic datasets
 -  `data/db/WGSdata/*`:  Whole genomic sequencing datasets including several bacteria
@@ -65,7 +65,7 @@ Necessary input description:
 
 Options (defaults in parentheses):
 
-    --help			Print this usage page.
+    --help		Print this usage page.
 
   Output:
 
@@ -73,25 +73,25 @@ Options (defaults in parentheses):
 
   Other paramerters:
 
-    --mode	<string>	standard or accelerated mode. (standard)
+    --mode		<string>	standard or accelerated mode. (standard)
 
     --length	<int>		The length of split fragments. (1000)
      
-    --step	<int>           The length of step to split the target genome. (800)
+    --step		<int>       The length of step to split the target genome. (800)
 
-    --kmer	<int>		The length of kmer. (4)
+    --kmer		<int>		The length of kmer. (4)
      
     --kmerPer	<int>		The percentage of fragments selected that are most different from the target genome. (20)
 
-    --trfPer	<int>           The percentage of sequences overlapping with simple repeats, and sequences above this percentage are judged as repeats and deleted as a whole. (50)
+    --trfPer	<int>       The percentage of sequences overlapping with simple repeats, and sequences above this percentage are judged as repeats and deleted as a whole. (50)
      
     --trfPara	<string>	The parameters of program trf (a comma-separated string), including matching weight,mismatching penaltyindel penalty,match probability,indel probability,minimum alignment score to report,maximum period size to report,maximum TR length expected. (2,5,7,80,10,50,1000,3)
 ```
 Example command:
 ```
-$ GIFEHGT kmerFilter --fasta path/to/example/data/fa/sacCer3_NC_001144.5.fa --mode accelerated
+$ GIFEHGT kmerFilter --fasta path/to/example/data/fa/sacCer3_NC_001146.8.fa --mode accelerated
 ```
-Results can be found in the directory `path/to/example/kmerFilter`.  
+Results of fragmented target genome can be found in the directory `path/to/example/kmerFilter`.  
 - `path/to/example/kmerFilter/4merFilter_removeSimRep.fa`: the fragments which are most different with target genome.
 #### 2. `splitDB`: Split the genomic database into three groups: SG, CRG and DRG
 The script will split the genomic database into three groups: SG, CRG and DRG and update taxonomic information of all organisms in genomic datasets.
@@ -100,31 +100,33 @@ Usage: GIFEHGT splitDB --id <genome_id> --taxo <genome_taxonomy> --taxoes <taxon
 
 Necessary input description:
 
-  genome_id		<string>        The genome id of target genome.
+  genome_id			<string>        The genome id of target genome.
 
-  genome_taxonomy	<string>	The taxonomy of target genome (a comma-separated string), whose format is like [kingdom,phylum,class,order].
+  genome_taxonomy	<string>		The taxonomy of target genome (a comma-separated string), whose format is like [kingdom,phylum,class,order].
 
-  taxonomy_file         <string>        The taxonomy of all genomes. each line of which is like [genome_id	genome_kingdom 	genome_phylum	genome_class	genome_order].
+  taxonomy_file		<string>        The taxonomy of all genomes. each line of which is like [genome_id	genome_kingdom 	genome_phylum	genome_class	genome_order].
 
-  type_file		<string>	The kingdom of all genomes. Like [GCF_000001405.40_GRCh38.p14_genomic      Metazoa] for human.
+  type_file			<string>		The kingdom of all genomes. Like [GCF_000001405.40_GRCh38.p14_genomic      Metazoa] for human.
 
 Options (defaults in parentheses):
 
-    --help                              Print this usage page.
+    --help                          Print this usage page.
 
   Output:
 
-    --outdir		<string>	The result files will be output to this directory. (./splitDB)
+    --outdir		<string>		The result files will be output to this directory. (./splitDB)
 
   Other parameters:
 
-    --distant		<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
+    --distant		<string>		The distantly related group. kingdom or phylum can be chosen. (kingdom)
 ```
 Example command:
 ```
 $ GIFEHGT splitDB --id GCF_000146045.2 --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales --taxoes path/to/example/data/db/all_range.txt --type path/to/example/data/db/all_type.txt
 ```
-Results can be found in the directory `path/to/example/splitDB`.  
+Results of calssification fof database can be found in the directory `path/to/example/splitDB`. 
+- `path/to/example/splitDB/*id`: all genome id of species in different groups.
+- `path/to/example/splitDB/type.txt`: taxonomy of all species in database.
 #### 3. `seqAlign`: Sequence aligment using LASTZ
 The script will acquire sequences of target genome which can align with genomes in DRG.
 ```
@@ -132,37 +134,40 @@ Usage: GIFEHGT seqAlign [options] --db <db_genome_dir>
 
 Necessary input description:
 
-  db_genome_dir		<string>	The directory of all genomes saved.
+  db_genome_dir		<string>		The directory of all genomes saved.
 
 Options (defaults in parentheses):
 
-    --help				Print this usage page.
+    --help			Print this usage page.
   
   Input:
 
-    --fragment		<string>	The fasta file of filtered fragments of target genome. (./kmerFilter/split.fasta)
+    --fragment		<string>		The fasta file of filtered fragments of target genome. (./kmerFilter/split.fasta)
 
-    --genome		<string>	The fasta file of target genome. (./kmerFilter/new.fasta)
+    --genome		<string>		The fasta file of target genome. (./kmerFilter/new.fasta)
 
-    --dbinfodir		<string>	The directory that all genome information saved. (./splitDB/)
+    --dbinfodir		<string>		The directory that all genome information saved. (./splitDB/)
 
   Output:
 
-    --outdir		<string>	The result files will be output to this directory.
+    --outdir		<string>		The result files will be output to this directory.
 
   Other parameters:
 
-    --suffix		<string>	The suffix of genome file in database. (fna)
+    --suffix		<string>		The suffix of genome file in database. (fna)
 
     --distant		<string>        The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
-    --identity		<float>		The threshold of identity. Two sequences above this threshold are considered to be similar. (0.5)
+    --identity		<float>			The threshold of identity. Two sequences above this threshold are considered to be similar. (0.5)
 ```
 Example command:
 ```
 $ GIFEHGT seqAlign --db path/to/example/data/db/refseq
 ```
-Results can be found in the directory `path/to/example/seqAlign`.  
+Results of sequence alignment can be found in the directory `path/to/example/seqAlign`.  
+- `path/to/example/seqAlign/distant/*`: sequence alignment results of target genome and genomes of species in DRG.
+- `path/to/example/seqAlign/close/*`: sequence alignment results of target genome and genomes of species in CRG.
+- `path/to/example/seqAlign/all/*`: sequence alignment results of fragments in target genome which can align with both genomes of species in DRG and that in CRG.
 #### 4.  `screenHGT`: Screen potential HGTs using sequence alignment results
 The script will acquire sequences of target genome which have higher identity with genomes in DRG than that in CRG. If Strict mode is chosen, it will require the similarity between sequences of target genome and genomes in CRG or DRG is high than one threshold. Besides, the sequences with too high or too low GC percentage, overlapped simple repeat, low complex repeat, single-copy-gene common to eukaryotes, ERV and mitochondrial and chloroplast (if have) sequences are removed. 
 ```
@@ -170,27 +175,27 @@ Usage: GIFEHGT screenHGT [options] --repeat <repeat_file> --singlecopy <singleco
 
 Necessary input description:
 
-  repeat_file		<string>	The repeat annotation file of target genome.
+  repeat_file		<string>		The repeat annotation file of target genome.
 
-  singlecopy_file	<string>	The protein sequences file commom  to eukaryotes provided by BUSCO.
+  singlecopy_file	<string>		The protein sequences file commom  to eukaryotes provided by BUSCO.
 
-  mitChl_file		<string>	The fasta file of mitochondrial and chloroplast (if have) sequences.
+  mitChl_file		<string>		The fasta file of mitochondrial and chloroplast (if have) sequences.
 
-  genome_taxonomy       <string>        The taxonomy of target genome (a comma-separated string), whose format is like [kingdom,phylum,class,order].
+  genome_taxonomy   <string>    	The taxonomy of target genome (a comma-separated string), whose format is like [kingdom,phylum,class,order].
   
 Options (defaults in parentheses):
 
-    --help				Print this usage page.
+    --help			Print this usage page.
  
   Input:
 
     --genome		<string>        The fasta file of target genome. (./kmerFilter/new.fasta)
 
-    --dbInfoDir		<string> 	The directory that all genome information saved.
+    --dbInfoDir		<string> 		The directory that all genome information saved.
 
     --seqAlignDir	<string>        The directory that sequence alignment results saved. (./seqAlign/)
 
-    --type		<string>        The type file updated by the taxanomy of target genome. (./splitDB/type.txt)
+    --type			<string>        The type file updated by the taxanomy of target genome. (./splitDB/type.txt)
 
   Output:
 
@@ -198,28 +203,29 @@ Options (defaults in parentheses):
 
   Other parameters:
 
-    --mode		<string>	Filter mode. Original or Strict can be chosen. (Original)
+    --mode			<string>		Filter mode. Original or Strict can be chosen. (Original)
 
     --distant		<string>        The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
-    --self		<string>	The self group. phylum, classs, order or species can be chosen. (all of them)
+    --self			<string>		The self group. phylum, classs, order or species can be chosen. (all of them)
 
-    --length		<int>		The minimum length of HGTs. (135)
+    --length		<int>			The minimum length of HGTs. (135)
 
-    --coverage		<float>		The minimum coverage of similar CRG sequences and DRG sequences. (0.6)
+    --coverage		<float>			The minimum coverage of similar CRG sequences and DRG sequences. (0.6)
 
-    --idenCdHitEst	<float>		The identity threshold for cd-hit-est. (0.8)
+    --idenCdHitEst	<float>			The identity threshold for cd-hit-est. (0.8)
   
-    --simCRG		<float>		The lowest similarity between homologous sequences in CRG and HGTs in Strict mode. (0.5)
+    --simCRG		<float>			The lowest similarity between homologous sequences in CRG and HGTs in Strict mode. (0.5)
 
-    --simDRG		<float>		The lowest similarity between homologous sequences in DRG and HGTs in Strict mode. (0.6)
+    --simDRG		<float>			The lowest similarity between homologous sequences in DRG and HGTs in Strict mode. (0.6)
 ```
 Example command (strict mode is used):
 ```
 $ GIFEHGT screenHGT --mode Strict --repeat path/to/example/data/rmsk/rmsk.txt --singlecopy path/to/example/data/singlecopy/eukaryota.faa --mitChl path/to/example/data/mitochondria_chloroplast/mitochondria.fa --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales
 ```
-Results can be found in the directory `path/to/example/screenHGT`. 
-- `path/to/example/screenHGT/modeStrict/HGT.fa`: the sequences of potential HGTs.
+Results of potential HGTs an be found in the directory `path/to/example/screenHGT`. 
+- `path/to/example/screenHGT/modeStrict/HGT.fa`: the sequences of potential HGTs in strict mode.
+- `path/to/example/screenHGT/HGT.fa`: the sequences of potential HGTs in original mode.
 #### 5.  `WGSValidate`: Validate potential HGTs using WGS datasets
 The script will validate potential HGTs using WGS datasets.
 ```
@@ -227,55 +233,55 @@ Usage: GIFEHGT WGSValidate [options] --dbdir <db_genome_dir> --dbInfo <db_info_f
 
 Necessary input description:
 
-  db_genome_dir			<string>	The directory of all genome database.
+  db_genome_dir		<string>		The directory of all genome database.
 
-  db_info_file          	<string>        The information file of genomes in database.
+  db_info_file      <string>        The information file of genomes in database.
 
-  genome_taxonomy       	<string>        The taxonomy of target genome (a comma-separated string), whose format is like [kingdom,phylum,class,order].
+  genome_taxonomy   <string>        The taxonomy of target genome (a comma-separated string), whose format is like [kingdom,phylum,class,order].
 
-  db_WGSdata_dir		<string>	The directory of WGS datasets.
+  db_WGSdata_dir	<string>		The directory of WGS datasets.
 
 Options (defaults in parentheses):
 
-    --help                                      Print this usage page.
+    --help          Print this usage page.
 
   Input:
 
-    --genome			<string>        The fasta file of target genome. (./kmerFilter/new.fasta)
+    --genome		<string>        The fasta file of target genome. (./kmerFilter/new.fasta)
 
     --HGTId			<string>        The file of potential HGTs id. (./screenHGT/HGT.id or ./screenHGT/modeStrict/HGT.id)
 
-    --HGTInfoDir		<string>        The information directory of homologous sequences for HGTs. (./screenHGT/tree_kingdom)
+    --HGTInfoDir	<string>        The information directory of homologous sequences for HGTs. (./screenHGT/tree_kingdom)
 
-    --HGTInfoFile		<string>        The information file of homologous sequences for HGTs. (./screenHGT/HGT.info or ./screenHGT/modeStrict/HGT.info)
+    --HGTInfoFile	<string>        The information file of homologous sequences for HGTs. (./screenHGT/HGT.info or ./screenHGT/modeStrict/HGT.info)
 
     --type			<string>        The type file of genomes in database updated before. (./splitDB/type.txt)
 
-    --dbIdDir			<string>        The directory of genome id in database updated before. (./splitDB/)
+    --dbIdDir		<string>        The directory of genome id in database updated before. (./splitDB/)
 
   Output:
 
-    --outdir			<string>        The result files will be output to this directory. (./WGSValidation/)
+    --outdir		<string>        The result files will be output to this directory. (./WGSValidation/)
 
   Other paramerters:
 
-    --mode                  	<string>        Filter mode. Original or Strict can be chosen. (Original)
+    --mode          <string>        Filter mode. Original or Strict can be chosen. (Original)
 
-    --length			<int>		The length HGT upstream and downstream sequence verified by WGS datasets. (150)
+    --length		<int>			The length HGT upstream and downstream sequence verified by WGS datasets. (150)
 
-    --depth			<int>		The lowest depth at which the HGTs is covered by WGS datasets. (10)
+    --depth			<int>			The lowest depth at which the HGTs is covered by WGS datasets. (10)
 
-    --distant			<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
+    --distant		<string>		The distantly related group. kingdom or phylum can be chosen. (kingdom)
 
     --self			<string>        The self group. phylum, classs, order or species can be chosen. (all of them)
 
-    --idenCdHitEst		<float>         The identity threshold for cd-hit-est. (0.8)
+    --idenCdHitEst	<float>         The identity threshold for cd-hit-est. (0.8)
 ```
 Example command (strict mode is used):
 ```
 $ GIFEHGT WGSValidate --dbdir path/to/example/data/db/refseq/ --mode Strict --dbInfo path/to/example/data/db/all_info.txt --taxo Fungi,Ascomycota,Saccharomycetes,Saccharomycetales --dbWGSDir path/to/example/data/db/WGSdata/
 ```
-Results can be found in the directory `path/to/example/WGSValidate`. 
+Results of final HGTs can be found in the directory `path/to/example/WGSValidate`. 
 - `path/to/example/WGSValidate/afterWGS/HGT.fa`: the sequences of final HGTs.
 #### 6. `conPhyTree`: Construct sequence phylogenetic tree to validate HGTs
 The script will construct sequence phylogenetic tree to validate HGTs.
@@ -284,44 +290,44 @@ Usage: GIFEHGT conPhyTree --genomeId <genome_id> --fullName <target_fullname> --
 
 Necessary input description:
 
-  genome_id			<string>	The genome id of target genome.
+  genome_id			<string>		The genome id of target genome.
 
-  target_fullname		<string>	The full name of target species.
+  target_fullname	<string>		The full name of target species.
 
-  db_id_file			<string>	The id of all genomes in database.
+  db_id_file		<string>		The id of all genomes in database.
 
-  db_info_file			<string>	The id and name of all genomes in database.
+  db_info_file		<string>		The id and name of all genomes in database.
 
 Options (defaults in parentheses):
 
-    --help                                  	Print this usage page.
+    --help          Print this usage page.
 
   Input:
 
-    --HGTId			<string>	The file of potential HGTs id. (./WGSValidation/afterWGS/HGT.id)
+    --HGTId			<string>		The file of potential HGTs id. (./WGSValidation/afterWGS/HGT.id)
 
-    --HGTFa			<string>	The fasta file of potential HGTs. (./WGSValidation/afterWGS/HGT.fa)
+    --HGTFa			<string>		The fasta file of potential HGTs. (./WGSValidation/afterWGS/HGT.fa)
 
-    --HGTInfoDir		<string>        The information directory of homologous sequences for HGTs. (./screenHGT/tree/)
+    --HGTInfoDir	<string>        The information directory of homologous sequences for HGTs. (./screenHGT/tree/)
 
-    --hitFile			<string>	The file name of homologous sequences for HGTs. (cov-hit.species.WGS.txt or cov-hit.species.strict.WGS.txt)
+    --hitFile		<string>		The file name of homologous sequences for HGTs. (cov-hit.species.WGS.txt or cov-hit.species.strict.WGS.txt)
 
   Output:
 
-    --outdir			<string>	The result files will be output to this directory. (./conPhyTree/)
+    --outdir		<string>		The result files will be output to this directory. (./conPhyTree/)
 
   Other parameters:
     
-    --mode              	<string>        Filter mode. Original or Strict can be chosen. (Original)
+    --mode          <string>        Filter mode. Original or Strict can be chosen. (Original)
 
-    --distant                  	<string>	The distantly related group. kingdom or phylum can be chosen. (kingdom)
+    --distant       <string>		The distantly related group. kingdom or phylum can be chosen. (kingdom)
 ```
 Example command:
 ```
 $ GIFEHGT conPhyTree --mode Strict --genomeId GCF_000146045.2 --fullName Saccharomyces_cerevisiae_S288C --dbId path/to/example/data/db/all_id.txt --dbInfo path/to/example/data/db/all_info.txt
 ```
-Results can be found in the directory `path/to/example/conPhyTree`. 
-
+Results of phylogenetics trees can be found in the directory `path/to/example/conPhyTree`. 
+- `path/to/example/conPhyTree/tree_species/*`: the phylogenetics trees of final HGTs.
 [1]: http://www.bx.psu.edu/~rsharris/lastz
 [2]: https://tandem.bu.edu/trf/downloads
 [3]: https://github.com/weizhongli/cdhit/releases
