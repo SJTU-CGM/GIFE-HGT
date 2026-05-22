@@ -328,6 +328,7 @@ $ GIFEHGT conPhyTree --mode Strict --genomeId GCF_000146045.2 --fullName Sacchar
 ```
 Results of phylogenetics trees can be found in the directory `path/to/example/conPhyTree`. 
 - `path/to/example/conPhyTree/tree_species/*`: the phylogenetics trees of final HGTs.
+
 [1]: http://www.bx.psu.edu/~rsharris/lastz
 [2]: https://tandem.bu.edu/trf/downloads
 [3]: https://github.com/weizhongli/cdhit/releases
