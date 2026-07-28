@@ -5,6 +5,7 @@ sub seqAlign{
 use strict;
 use warnings;
 use Getopt::Long;
+use File::Path qw(remove_tree);
 
 my $usage="\nUsage: GIFEHGT seqAlign [options] --db <db_genome_dir>
 
@@ -105,6 +106,8 @@ sequenceAlignment($closeid,$out_dir_close,$genome_aligndistant_file,$db_genome_d
 #Move file in DRG and CRG to the sam directory
 moveFile($out_dir);
 
+#Remove intermediate files
+cleanupSeqAlignIntermediate($out_dir);
 }
 
 #Sequence alignment and convert format
@@ -123,8 +126,10 @@ while(<ID>){
     my $axtfile = $out_dir_axt.$id.".axt";
     my $covfile = $out_dir_cov.$id.".cov";
     my $bedfile = $out_dir_cov.$id.".bed";
+    my $mergefileori = $out_dir_cov.$id.".bed.merge.ori";
     my $mergefile = $out_dir_cov.$id.".bed.merge";
     my $idenfile = $out_dir_iden.$id.".bed";
+    my $dbgenomefile = $db_genome_dir.$id.".$genome_suffix";
     #Sequence alignment using LASTZ
     lastz($genome_file,$db_genome_dir,$id,$genome_suffix,$axtfile);
     #convert axt format to cov format
@@ -132,7 +137,9 @@ while(<ID>){
     #convert cov format to bed format
     cov2bed($covfile,$bedfile);
     #merge bed
-    mergeBed($bedfile,$mergefile);
+    mergeBed($bedfile,$mergefileori);
+    #adjust bed
+    adjustStrand($mergefileori,$dbgenomefile,$mergefile);
     #select frangments with identity more than threshold
     selectIden($mergefile,$idenfile,$iden_threshold);
 }
@@ -246,7 +253,7 @@ while(<IN>){
     if($chr eq ""){
         ($chr,$start,$end,$chr_0,$start_0,$end_0,$strand,$identity,$length) = ($chr1,$start1,$end1,$chr1_0,$start1_0,$end1_0,$strand1,$identity1,$length1);
     }
-    elsif($chr1 ne $chr){
+    elsif($chr1 ne $chr || $strand1 ne $strand){
         @data = split(/-/,$chr);
         $nstart=$data[1]+$start-1;
         $nend=$data[1]+$end-1;
@@ -299,7 +306,7 @@ while(<IN>){
     my $strand1 = $arr[6];
     if($chr eq ""){
         ($chr,$start,$end,$chr_0,$start_0,$end_0,$strand,$identity,$length) = ($chr1,$start1,$end1,$chr1_0,$start1_0,$end1_0,$strand1,$identity1,$length1);
-    }elsif($chr1 ne $chr){
+    }elsif($chr1 ne $chr || $strand1 ne $strand){
         print OUT "$chr\t$start\t$end\t$chr_0\t$start_0\t$end_0\t$strand\t$identity\n";
         ($chr,$start,$end,$chr_0,$start_0,$end_0,$strand,$identity,$length) = ($chr1,$start1,$end1,$chr1_0,$start1_0,$end1_0,$strand1,$identity1,$length1);
     }
@@ -324,6 +331,61 @@ while(<IN>){
 print OUT "$chr\t$start\t$end\t$chr_0\t$start_0\t$end_0\t$strand\t$identity\n";
 
 close IN; close OUT;
+}
+
+sub adjustStrand{
+my ($mergefileori,$dbgenomefile,$mergefile) = @_;
+
+open(FA,$dbgenomefile)||die("error with opening $dbgenomefile\n");
+open(BED,$mergefileori)||die("error with opening $mergefileori\n");
+open(OUT,">$mergefile")||die("error with writing to $mergefile\n");
+
+my %length = ();
+my $id = "";
+while(<FA>){
+    chomp();
+    if($_ =~ />([^\s]+)/){
+        $id = $1;
+        $length{$id} = 0;
+    }
+    else{
+        $length{$id} += length($_);
+    }
+}
+
+while(<BED>){
+    chomp();
+    my @arr = split(/\s+/,$_);
+    my ($chr0,$start0,$end0,$chr,$start,$end,$strand,$identity) = ($arr[0],$arr[1],$arr[2],$arr[3],$arr[4],$arr[5],$arr[6],$arr[7]);
+    if($strand eq "+"){
+        my $startn = $start-1;
+        print OUT "$chr0\t$start0\t$end0\t$chr\t$startn\t$end\t+\t$identity\n";
+    }
+    else{
+        my $startn = $length{$chr}-$end;
+        my $endn = $length{$chr}-$start+1;
+        print OUT "$chr0\t$start0\t$end0\t$chr\t$startn\t$endn\t+\t$identity\n";
+    }
+}
+
+close FA;close BED;close OUT;
+}
+
+sub cleanupSeqAlignIntermediate{
+my ($out_dir) = @_;
+
+# The AXT directories are deliberately retained.
+my @intermediate_dirs = (
+    $out_dir."distant/cov/",
+    $out_dir."distant/iden/",
+    $out_dir."close/cov/",
+    $out_dir."close/iden/",
+    $out_dir."close/fa/"
+);
+
+foreach my $dir (@intermediate_dirs){
+    remove_tree($dir) if -d $dir;
+}
 }
 
 sub selectIden{

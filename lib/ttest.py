@@ -3,6 +3,7 @@
 from scipy import stats as stats
 import numpy as np
 import re,sys
+import os
 
 if len(sys.argv) != 7:
     print("Error with arguments\n"+sys.argv[0]+"\n")
@@ -52,12 +53,19 @@ for line1 in LOCATION:
     DEPTH.close()
 
     hgt=np.array(list_hgt)
+    test_result = stats.ttest_ind(
+    list_hgt,
+    list_flanking150bp,
+    equal_var=False
+    )
+    p = float(test_result[1])
+    print(test_result)
     flanking150bp=np.array(list_flanking150bp)
-    pvalue = str(stats.ttest_ind(list_hgt, list_flanking150bp, equal_var = False))
-    p = pvalue.split('pvalue=')[1].split(',')[0]
-    print(pvalue) 
+    #pvalue = str(stats.ttest_ind(list_hgt, list_flanking150bp, equal_var = False))
+    #p = pvalue.split('pvalue=')[1].split(',')[0]
+    #print(pvalue) 
    
-    if((int(length)-int(num)>2) or (float(np.mean(hgt))<float(depth)) or (float(np.mean(hgt)) < float(np.mean(flanking150bp)) and float(p) < 0.05)):
+    if((int(length)-int(num)>2) or (float(np.mean(hgt))<float(depth)) or (float(np.mean(hgt)) < float(np.mean(flanking150bp)) and p < 0.05)):
         OUT.write(chro + "|" + start + "-" + end + "|" + sign + "\t0.00\n")
     else:
         OUT.write(chro + "|" + start + "-" + end + "|" + sign + "\t" + str(float(int(num)/int(length))) + "\n")
@@ -75,3 +83,10 @@ for line1 in LOCATION:
     print(np.var(hgt))
     print(np.var(flanking150bp))
 
+OUT.close()
+OUTNORMAL.close()
+LOCATION.close()
+
+# This output is not used by downstream steps.
+if os.path.exists(sys.argv[4]):
+    os.remove(sys.argv[4])

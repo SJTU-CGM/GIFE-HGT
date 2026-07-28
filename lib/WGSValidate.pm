@@ -7,6 +7,7 @@ use warnings;
 use lib '.';
 use screenHGT;
 use Getopt::Long;
+use File::Path qw(remove_tree);
 
 my $usage="\nUsage: GIFEHGT WGSValidate [options] --dbdir <db_genome_dir> --dbInfo <db_info_file> --taxo <genome_taxonomy> --dbWGSDir <db_WGSdata_dir>
 
@@ -134,9 +135,6 @@ unless($HGT_homologous_info_dir=~/\/$/){
 unless($db_dir=~/\/$/){
     $db_dir.="/";
 }
-unless($db_WGSdata_dir=~/\/$/){
-    $db_WGSdata_dir.="/";
-}
 mkdir($out_dir);
 my $out_dir_table = $out_dir."table/";
 my $out_dir_faori = $out_dir."fa_ori/";
@@ -219,6 +217,98 @@ screenHGT::distantIdenHclose($screen_distant,$screen_self,$hit_file_WGS,$db_id_d
 my $dHcfa = $out_dir_afterWGS."distantHclose_".$screen_distant.".fa";
 my $streeinfo = $out_dir_afterWGS."tree_".$screen_distant.".select.info";
 screenHGT::rmRedundancy($dHcfa,$cdhit_threshold,$streeinfo,$out_dir_afterWGS);
+
+#Remove intermediate files
+cleanupWGSIntermediate(
+    $HGT_id_file,
+    $HGT_homologous_info_dir,
+    $out_dir_table,
+    $out_dir_faori,
+    $out_dir_fa,
+    $out_dir_sam,
+    $out_dir_cov,
+    $out_dir_matrix,
+    $out_dir_afterWGS,
+    $screen_distant
+);
+}
+
+sub cleanupWGSIntermediate{
+my (
+    $HGT_id_file,
+    $HGT_homologous_info_dir,
+    $out_dir_table,
+    $out_dir_faori,
+    $out_dir_fa,
+    $out_dir_sam,
+    $out_dir_cov,
+    $out_dir_matrix,
+    $out_dir_afterWGS,
+    $screen_distant
+) = @_;
+
+my @files = (
+    $out_dir_table."speciesInfo.txt",
+    $out_dir_table."WGS.id",
+    $out_dir_table."WGS.species",
+    $out_dir_table."WGS_noneed.id",
+
+    $out_dir_matrix."matrix.txt",
+    $out_dir_matrix."all.id",
+    $out_dir_matrix."notvalidated.id.ori",
+    $out_dir_matrix."notvalidated.id.add",
+    $out_dir_matrix."notvalidated.id.mid",
+
+    $out_dir_afterWGS."tree_".$screen_distant.".select.info",
+    $out_dir_afterWGS."tree_".$screen_distant.".select.id",
+    $out_dir_afterWGS."distantHclose_".$screen_distant.".bed",
+    $out_dir_afterWGS."distantHclose_".$screen_distant.".fa",
+    $out_dir_afterWGS."HGT.fa.clstr"
+);
+
+my @self = $screen_distant eq "kingdom"
+    ? ("phylum","class","order","species")
+    : $screen_distant eq "phylum"
+    ? ("class","order","species")
+    : ("order","species");
+
+foreach my $self (@self){
+    push @files,
+        $out_dir_afterWGS."distantHclose_".$screen_distant."-".$self.".bed",
+        $out_dir_afterWGS."distantHclose_".$screen_distant."-".$self.".info";
+}
+
+# Delete three files for each HGT–species combination.
+# The *.fa file is retained for conPhyTree.
+open(my $IDS,"<",$HGT_id_file)
+    or die("WGSValidate.cleanup: error with opening $HGT_id_file\n");
+
+while(my $hgtid = <$IDS>){
+    chomp($hgtid);
+    my $hit_dir = $HGT_homologous_info_dir.$hgtid."/hit/";
+
+    push @files,
+        glob($hit_dir."*.bed"),
+        glob($hit_dir."*.bed.flanking"),
+        glob($hit_dir."*.fa.flanking");
+}
+close($IDS);
+
+foreach my $file (@files){
+    next unless -e $file;
+    unlink($file)
+        or warn("Warning: could not remove intermediate file \"$file\": $!\n");
+}
+
+# Delete species FASTA, Bowtie2 indexes, SAM-depth and coverage files.
+foreach my $dir (
+    $out_dir_faori,
+    $out_dir_fa,
+    $out_dir_sam,
+    $out_dir_cov
+){
+    remove_tree($dir) if -d $dir;
+}
 }
 
 sub getHomoFA{

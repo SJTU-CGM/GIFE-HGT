@@ -34,7 +34,7 @@ Options (defaults in parentheses):
      
     --kmerPer	<int>		The percentage of fragments selected that are most different from the target genome. (100 in standard mode and 20 in accelerated mode)
 
-    --trfPer	<int>           The percentage of sequences overlapping with simple repeats, and sequences above this percentage are judged as repeats and deleted as a whole. (50)
+    --trfPer	<float>		The percentage of sequences overlapping with simple repeats, and sequences above this percentage are judged as repeats and deleted as a whole. (0.5)
      
     --trfPara	<string>	The parameters of program trf (a comma-separated string), including matching weight,mismatching penaltyindel penalty,match probability,indel probability,minimum alignment score to report,maximum period size to report,maximum TR length expected. (2,5,7,80,10,50,1000,3)
 
@@ -63,7 +63,7 @@ GetOptions(
     'step=i'    => \$split_step,
     'kmer=i'    => \$kmerFilter_kmer,
     'kmerPer=i' => \$kmerFilter_per_input,
-    'trfPer=i'  => \$remove_per,
+    'trfPer=f'  => \$remove_per,
     'trfPara=s' => \$remove_parameter
 ) or die $usage;
 ($remove_match,$remove_Mismatch,$remove_Delta,$remove_PM,$remove_PI,$remove_Minscore,$remove_MaxPeriod,$remove_len) = split(/,/, $remove_parameter) if $remove_parameter;
@@ -126,6 +126,20 @@ runtrf($kmer_filter_file,$kmer_filter_name,$trf_out_file,$remove_match,$remove_M
 #Remove fragments with simple repeat sequences
 removeSim($trf_out_file,$remove_per,$outbed,$new_genome_file,$outfa);
 
+#Remove intermediate files
+my @intermediate_files = (
+    $split_fragments_file,
+    $kmer_genome_file,
+    $kmer_fragments_file,
+    $kmer_distance_file,
+    $kmer_filter_file,
+    $trf_out_file
+);
+foreach my $file (@intermediate_files){
+    next unless -e $file;
+    unlink($file)
+        or warn("Warning: could not remove intermediate file \"$file\": $!\n");
+}
 }
 
 #Convert fasta files from a multi-line format to a single-line format
@@ -437,7 +451,7 @@ foreach my $k (keys %seq){
     my $repeat=($seq{$k}=~s/N/N/g);
     my $cov=$repeat/$length;
     #print "$split[0]-$split[1]-$split[2]\t$seq{$k}\n$repeat\t$length\t$cov\t$remove_per\n";
-    if($cov < $remove_per){
+    if($cov <= $remove_per){
         print OUT "$split[0]\t$split[1]\t$split[2]\n";
     }
 }

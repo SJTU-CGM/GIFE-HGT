@@ -7,6 +7,7 @@ use warnings;
 use lib '.';
 use base;
 use Getopt::Long;
+use File::Path qw(remove_tree);
 
 my $usage="\nUsage: GIFEHGT screenHGT [options] --repeat <repeat_file> --singlecopy <singlecopy_file> --mitChl <mitChl_file> --taxo <genome_taxonomy>
 
@@ -189,7 +190,7 @@ rmRedundancy($dHcfa,$cdhit_threshold,$streeinfo,$out_dir);
 if($mode eq "Strict"){
 my $out_dir_strict = $out_dir."modeStrict/";
 mkdir($out_dir_strict);
-my $HGTbed = $out_dir."HGT.bed";
+my $HGTbed = $out_dir."distantHclose_".$screen_distant.".bed";
 open(HGTBED,$HGTbed)||die("screenHGT.modeStrict: error with opening $HGTbed\n");
 while(<HGTBED>){
     chomp();
@@ -204,6 +205,15 @@ my $dHcfa = $out_dir_strict."distantHclose_".$screen_distant.".fa";
 my $streeinfo = $out_dir_strict."tree_".$screen_distant.".select.info";
 rmRedundancy($dHcfa,$cdhit_threshold,$streeinfo,$out_dir_strict);
 }
+
+cleanupSeqAlignInputs($seq_alignment_dir);
+
+cleanupScreenHGT(
+    $out_dir,
+    $out_dir_tree,
+    $screen_distant,
+    $repeat_file
+)
 
 }
 
@@ -305,6 +315,88 @@ base::id2bed($file_all,$file_allbed);
 base::merge($file_allbed,$file_allmerge);
 my $file_allfasta = $out_dir."all.fa";
 base::getSeq($genome_file,$file_allmerge,$file_allfasta);
+}
+
+#Remove intermediate files
+sub cleanupSeqAlignInputs{
+my ($seq_alignment_dir) = @_;
+
+foreach my $dir (
+    $seq_alignment_dir."all/iden/",
+    $seq_alignment_dir."all/cov/"
+){
+    remove_tree($dir) if -d $dir;
+}
+
+rmdir($seq_alignment_dir."all/")
+    if -d $seq_alignment_dir."all/";
+}
+
+sub cleanupScreenHGT{
+my ($out_dir,$out_dir_tree,$screen_distant,$repeat_file) = @_;
+
+foreach my $dir (
+    $out_dir."close/",
+    $out_dir."distant/",
+    $out_dir."singlecopy/",
+    $out_dir."ERV/",
+    $out_dir."mitChl/"
+){
+    remove_tree($dir) if -d $dir;
+}
+
+my @files = (
+    $out_dir."all.out",
+    $out_dir."all.bed.mid",
+    $out_dir."all.bed",
+    $out_dir."all.fa",
+    $out_dir."noN.fa",
+    $out_dir."noN.bed",
+    $out_dir."noN_rmsk.txt",
+    $out_dir."noNnormskmid.filter.bed",
+    $out_dir."noNnormskmid.bed",
+    $out_dir."noNnormskmid.fa",
+    $out_dir."noNnormsk.trf.mask",
+    $out_dir."noNnormsk.bed",
+    $out_dir."noNnormsk.fa",
+    $out_dir."noNnormsknoSCG.bed",
+    $out_dir."noNnormsknoSCG.fa",
+    $out_dir."noNnormsknoSCG_ERV",
+    $out_dir."noNnormsknoSCG_ERV.bed",
+    $out_dir."noNnormsknoSCGnoERV.bed",
+    $out_dir."noNnormsknoSCGnoERV.fa",
+    $out_dir."noNnormsknoSCGnoERVnoMC.bed",
+    $out_dir."tree_".$screen_distant.".select.info",
+    $out_dir."tree_".$screen_distant.".select.id",
+    $out_dir."distantHclose_".$screen_distant.".bed",
+    $out_dir."distantHclose_".$screen_distant.".fa",
+    $out_dir."HGT.fa.clstr",
+    $repeat_file.".bed"
+);
+
+my @self = $screen_distant eq "kingdom"
+    ? ("phylum","class","order","species")
+    : $screen_distant eq "phylum"
+    ? ("class","order","species")
+    : ("order","species");
+
+foreach my $self (@self){
+    push @files,
+        $out_dir."distantHclose_".$screen_distant."-".$self.".bed",
+        $out_dir."distantHclose_".$screen_distant."-".$self.".info";
+}
+
+foreach my $candidate_dir (glob($out_dir_tree."*/")){
+    push @files,
+        $candidate_dir."cov.txt",
+        $candidate_dir."cov-hit.txt";
+}
+
+foreach my $file (@files){
+    next unless -e $file;
+    unlink($file)
+        or warn("Warning: could not remove intermediate file \"$file\": $!\n");
+}
 }
 
 #Remove sequences with NNN
@@ -412,7 +504,7 @@ my ($kmer_filter_file,$kmer_filter_name,$genome_file,$out_dir,$trf_out_name) = @
 my $trf_out_file = $out_dir.$trf_out_name.".trf.mask";
 my $outbed = $out_dir.$trf_out_name."_removeSimRep.bed";
 my $outfa = $out_dir.$trf_out_name."_removeSimRep.fa";
-my $remove_per = 50;
+my $remove_per = 0.2;
 my $remove_match = 2;
 my $remove_Mismatch = 5;
 my $remove_Delta = 7;

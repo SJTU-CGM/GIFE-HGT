@@ -5,6 +5,7 @@ sub conPhyTree{
 use strict;
 use warnings;
 use Getopt::Long;
+use File::Path qw(remove_tree);
 
 my $usage="\nUsage: GIFEHGT conPhyTree --genomeId <genome_id> --fullName <target_fullname> --dbId <db_id_file> --dbInfo <db_info_file>
 
@@ -164,6 +165,50 @@ while(<ID>){
 
 #Covert genome id to species name
 convertId2Name($db_id_file,$db_info_file,$out_dir_genomeid,$out_dir_species);
+
+#Remove intermediate files
+cleanupPhyTreeIntermediate(
+    $HGT_id_file,
+    $HGT_homologous_info_dir,
+    $out_dir_genomeid,
+    $out_dir_species
+);
+}
+
+sub cleanupPhyTreeIntermediate{
+my (
+    $HGT_id_file,
+    $HGT_homologous_info_dir,
+    $out_dir_genomeid,
+    $out_dir_species
+) = @_;
+
+open(my $IDS,"<",$HGT_id_file)
+    or die("conPhyTree.cleanup: error with opening $HGT_id_file\n");
+
+while(my $hgtid = <$IDS>){
+    chomp($hgtid);
+
+    my $final_tree = $out_dir_species.$hgtid.".tree";
+
+    # Do not delete intermediates if the final tree was not generated.
+    unless(-s $final_tree){
+        warn("Warning: final tree \"$final_tree\" was not generated; intermediate files were retained.\n");
+        next;
+    }
+
+    my $work_dir = $out_dir_genomeid.$hgtid."/";
+    remove_tree($work_dir) if -d $work_dir;
+
+    my $hit_dir = $HGT_homologous_info_dir.$hgtid."/hit/";
+    foreach my $file (glob($hit_dir."*.fa")){
+        unlink($file)
+            or warn("Warning: could not remove intermediate file \"$file\": $!\n");
+    }
+}
+
+close($IDS);
+rmdir($out_dir_genomeid) if -d $out_dir_genomeid;
 }
 
 #Covert genome id to species name
